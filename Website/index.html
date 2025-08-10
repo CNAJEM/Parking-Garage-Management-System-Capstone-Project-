@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ParkingPro - Live Parking Availability</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #1a1d29;
+            color: #ffffff;
+            min-height: 100vh;
+        }
+
+        .header {
+            background-color: #2d3748;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #4a5568;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.25rem;
+            font-weight: bold;
+        }
+
+        .logo-icon {
+            width: 24px;
+            height: 24px;
+            background-color: #4299e1;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+        }
+
+                .nav-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .nav-btn {
+            background: none;
+            border: none;
+            color: #a0aec0;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-btn:hover {
+            background-color: #4a5568;
+            color: white;
+        }
+
+        .nav-btn.active {
+            background-color: #4a5568;
+            color: white;
+        }
+        .container {
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .main-title {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: #a0aec0;
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .last-updated {
+            color: #718096;
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .metric-card {
+            background-color: #2d3748;
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 1px solid #4a5568;
+        }
+
+        .metric-label {
+            color: #a0aec0;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .metric-icon {
+            width: 24px;
+            height: 24px;
+            opacity: 0.7;
+        }
+
+        .available { color: #48bb78; }
+        .occupied { color: #4299e1; }
+        .rate { color: #48bb78; }
+        .alerts { color: #f56565; }
+
+        .garage-status {
+            background-color: #2d3748;
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 1px solid #4a5568;
+            margin-bottom: 2rem;
+        }
+
+        .status-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            background-color: #48bb78;
+            border-radius: 50%;
+        }
+
+        .status-title {
+            font-size: 1.25rem;
+            font-weight: bold;
+        }
+
+        .status-text {
+            color: #a0aec0;
+            margin-bottom: 1rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background-color: #4a5568;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 0.5rem;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: #48bb78;
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        .floor-section {
+            margin-bottom: 2rem;
+        }
+
+        .floor-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+
+        .floor-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .floor-card {
+            background-color: #2d3748;
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 1px solid #4a5568;
+            position: relative;
+        }
+
+        .floor-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .floor-name {
+            font-size: 1.25rem;
+            font-weight: bold;
+        }
+
+        .availability-badge {
+            background-color: #48bb78;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .availability-badge.available {
+    background-color: #48bb78;
+}
+
+.availability-badge.limited {
+    background-color: #ed8936;
+}
+
+.availability-badge.nearly-full {
+    background-color: #f56565;
+}
+
+.availability-badge.full {
+    background-color: #e53e3e;
+}
+
+.status-indicator.available {
+    background-color: #48bb78;
+}
+
+.status-indicator.limited {
+    background-color: #ed8936;
+}
+
+.status-indicator.nearly-full {
+    background-color: #f56565;
+}
+
+.status-indicator.full {
+    background-color: #e53e3e;
+}
+
+        .floor-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .floor-stat {
+            text-align: center;
+        }
+
+        .floor-stat-label {
+            color: #a0aec0;
+            font-size: 0.8rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .floor-stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .floor-progress {
+            width: 100%;
+            height: 6px;
+            background-color: #4a5568;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: 0.5rem;
+        }
+
+        .floor-progress-fill {
+            height: 100%;
+            background-color: #48bb78;
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+
+        .floor-occupancy {
+            text-align: center;
+            color: #a0aec0;
+            font-size: 0.9rem;
+        }
+
+        .progress-fill.available {
+    background-color: #48bb78;
+}
+
+.progress-fill.limited {
+    background-color: #ed8936;
+}
+
+.progress-fill.nearly-full {
+    background-color: #f56565;
+}
+
+.progress-fill.full {
+    background-color: #e53e3e;
+}
+
+.floor-progress-fill.available {
+    background-color: #48bb78;
+}
+
+.floor-progress-fill.limited {
+    background-color: #ed8936;
+}
+
+.floor-progress-fill.nearly-full {
+    background-color: #f56565;
+}
+
+.floor-progress-fill.full {
+    background-color: #e53e3e;
+}
+    </style>
+</head>
+<body>
+<div class="header">
+    <div class="logo">
+        <div class="logo-icon">🅿️</div>
+        ParkingPro
+    </div>
+    <div class="nav-buttons">
+        <a href="index.html" class="nav-btn active">🏠 Dashboard</a>
+        <a href="purchase.html" class="nav-btn">🎫 Purchase Permit</a>
+        <a href="#" id="admin-login-btn" class="nav-btn">⚙️ Admin</a>
+    </div>
+</div>
+
+    <div id="index-login-modal" style="display:none; position:absolute; right:40px; top:60px; background:#2d3748; color:white; padding:1rem 2rem; border-radius:12px; box-shadow:0 0 20px #000; z-index:1000;">
+    <form id="index-login-form" style="display:flex; flex-direction:column; gap:0.5rem;">
+        <input type="text" id="index-username" placeholder="Username" required style="padding:0.5rem; border-radius:5px; border:1px solid #4a5568; background:#232839; color:white;">
+        <input type="password" id="index-password" placeholder="Password" required style="padding:0.5rem; border-radius:5px; border:1px solid #4a5568; background:#232839; color:white;">
+        <button type="submit" style="padding:0.6rem; border-radius:6px; border:none; background:#4299e1; color:white; font-size:1rem;">Login</button>
+        <p id="index-modal-error" style="color:#f56565; margin:0;"></p>
+    </form>
+</div>
+
+
+    <div class="container">
+        <h1 class="main-title">Live Parking Availability</h1>
+        <p class="subtitle">Real-time monitoring across all garage levels</p>
+        <p class="last-updated">Last updated: 3:04:06 AM</p>
+
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-label">Available Spaces</div>
+                <div class="metric-value available">
+                    151
+                    <span class="metric-icon">🚗</span>
+                </div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Occupied Spaces</div>
+                <div class="metric-value occupied">
+                    349
+                    <span class="metric-icon">👥</span>
+                </div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Occupancy Rate</div>
+                <div class="metric-value rate">
+                    69.8%
+                    <span class="metric-icon">📊</span>
+                </div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Active Alerts</div>
+                <div class="metric-value alerts">
+                    3
+                    <span class="metric-icon">⚠️</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="garage-status">
+            <div class="status-header">
+                <div class="status-indicator"></div>
+                <div class="status-title">Garage Status: Available</div>
+            </div>
+            <div class="status-text">151 of 500 spaces available</div>
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: 30.2%"></div>
+            </div>
+        </div>
+
+        <div class="floor-section">
+            <h2 class="floor-title">Floor Availability</h2>
+            <div class="floor-grid">
+                <div class="floor-card">
+                    <div class="floor-header">
+                        <div class="floor-name">Ground Floor</div>
+                        <div class="availability-badge">Available</div>
+                    </div>
+                    <div class="floor-stats">
+                        <div class="floor-stat">
+                            <div class="floor-stat-label">Available:</div>
+                            <div class="floor-stat-value available">52</div>
+                        </div>
+                        <div class="floor-stat">
+                            <div class="floor-stat-label">Occupied:</div>
+                            <div class="floor-stat-value occupied">48</div>
+                        </div>
+                        <div class="floor-stat">
+                            <div class="floor-stat-label">Total:</div>
+                            <div class="floor-stat-value">100</div>
+                        </div>
+                    </div>
+                    <div class="floor-progress">
+                        <div class="floor-progress-fill" style="width: 52%"></div>
+                    </div>
+                    <div class="floor-occupancy">48.0% occupied</div>
+                </div>
+
+                <div class="floor-card">
+                    <div class="floor-header">
+                        <div class="floor-name">Level 1</div>
+                        <div class="availability-badge">Available</div>
+                    </div>
+                    <div class="floor-stats">
+                        <div class="floor-stat">
+                            <div class="floor-stat-label">Available:</div>
+                            <div class="floor-stat-value available">44</div>
+                        </div>
+                        <div class="floor-stat">
+                            <div class="floor-stat-label">Occupied:</div>
+                            <div class="floor-stat-value occupied">76</div>
+                        </div>
+                        <div class="floor-stat">
+                            <div class="floor-stat-label">Total:</div>
+                            <div class="floor-stat-value">120</div>
+                        </div>
+                    </div>
+                    <div class="floor-progress">
+                        <div class="floor-progress-fill" style="width: 36.7%"></div>
+                    </div>
+                    <div class="floor-occupancy">63.3% occupied</div>
+                </div>
+
+                <div class="floor-card">
+                    <div class="floor-header">
+                        <div class="floor-name">Level 2</div>
+                        <div class="availability-badge">Available</div>
+                    </div>
+                    <div class="floor-stats">
+                        <div class="floor-stat">
+                            <div class="floor-stat-label">Available:</div>
+                            <div class="floor-stat-value available">40</div>
+                        </div>
+                        <div class="floor-stat">
+                            <div class="floor-stat-label">Occupied:</div>
+                            <div class="floor-stat-value occupied">80</div>
+                        </div>
+                        <div class="floor-stat">
+                            <div class="floor-stat-label">Total:</div>
+                            <div class="floor-stat-value">120</div>
+                        </div>
+                    </div>
+                    <div class="floor-progress">
+                        <div class="floor-progress-fill" style="width: 33.3%"></div>
+                    </div>
+                    <div class="floor-occupancy">66.7% occupied</div>
+                </div>
+            </div>
+        </div>
+    </div>
+<script>
+    const API_BASE_URL = 'http://localhost:3000/api';
+
+    async function fetchParkingData() {
+        try {
+            const response = await fetch(`${API_BASE_URL}/parking-data`);
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            const data = await response.json();
+            updateDashboard(data);
+        } catch (error) {
+            console.error('Error fetching parking data:', error);
+            showError('Failed to fetch parking data. Please check if the API server is running.');
+        }
+    }
+
+    function getStatusInfo(availableSpaces) {
+    if (availableSpaces >= 25) {
+        return { status: 'Available', class: 'available' };
+    } else if (availableSpaces >= 10) {
+        return { status: 'Limited', class: 'limited' };
+    } else if (availableSpaces >= 1) {
+        return { status: 'Nearly Full', class: 'nearly-full' };
+    } else {
+        return { status: 'Full', class: 'full' };
+    }
+}
+    function updateDashboard(data) {
+        const { floors, last_updated } = data;
+
+        // Aggregate overview data
+        const totalSpaces = floors.reduce((sum, f) => sum + f.total_spaces, 0);
+        const totalOccupied = floors.reduce((sum, f) => sum + f.occupied_spaces, 0);
+        const totalAvailable = totalSpaces - totalOccupied;
+        const occupancyRate = ((totalOccupied / totalSpaces) * 100).toFixed(1);
+
+        // Update metric cards
+        document.querySelector('.metrics-grid .available').textContent = totalAvailable;
+        document.querySelector('.metrics-grid .occupied').textContent = totalOccupied;
+        document.querySelector('.metrics-grid .rate').textContent = `${occupancyRate}%`;
+        document.querySelector('.metrics-grid .alerts').textContent = data.active_alerts || 0;
+
+       // Update garage status
+const garageStatusInfo = getStatusInfo(totalAvailable);
+const statusIndicator = document.querySelector('.status-indicator');
+const statusTitle = document.querySelector('.status-title');
+
+statusIndicator.className = `status-indicator ${garageStatusInfo.class}`;
+statusTitle.textContent = `Garage Status: ${garageStatusInfo.status}`;
+
+const progressFill = document.querySelector('.progress-fill');
+progressFill.className = `progress-fill ${garageStatusInfo.class}`;
+progressFill.style.width = `${(totalAvailable / totalSpaces) * 100}%`;
+
+document.querySelector('.status-text').textContent = `${totalAvailable} of ${totalSpaces} spaces available`;
+        // Update floor cards
+        updateFloorCards(floors);
+
+        // Update timestamp
+        const lastUpdated = new Date(last_updated);
+        document.querySelector('.last-updated').textContent = 
+            `Last updated: ${lastUpdated.toLocaleTimeString('en-US', { hour12: true, hour: 'numeric', minute: '2-digit', second: '2-digit' })}`;
+    }
+
+    function updateFloorCards(floors) {
+        const floorGrid = document.querySelector('.floor-grid');
+        floorGrid.innerHTML = '';
+
+        floors.forEach(floor => {
+            const available = floor.total_spaces - floor.occupied_spaces;
+            const occupancyRate = ((floor.occupied_spaces / floor.total_spaces) * 100).toFixed(1);
+            const availablePercentage = ((available / floor.total_spaces) * 100).toFixed(1);
+            const statusInfo = getStatusInfo(available);
+
+            const card = document.createElement('div');
+            card.className = 'floor-card';
+            card.innerHTML = `
+                <div class="floor-header">
+                    <div class="floor-name">${floor.name}</div>
+                    <div class="availability-badge ${statusInfo.class}">${statusInfo.status}</div>
+                </div>
+                <div class="floor-stats">
+                    <div class="floor-stat">
+                        <div class="floor-stat-label">Available:</div>
+                        <div class="floor-stat-value available">${available}</div>
+                    </div>
+                    <div class="floor-stat">
+                        <div class="floor-stat-label">Occupied:</div>
+                        <div class="floor-stat-value occupied">${floor.occupied_spaces}</div>
+                    </div>
+                    <div class="floor-stat">
+                        <div class="floor-stat-label">Total:</div>
+                        <div class="floor-stat-value">${floor.total_spaces}</div>
+                    </div>
+                </div>
+                <div class="floor-progress">
+                    <div class="floor-progress-fill ${statusInfo.class}" style="width: ${availablePercentage}%"></div>
+                </div>
+                <div class="floor-occupancy">${occupancyRate}% occupied</div>
+            `;
+            floorGrid.appendChild(card);
+        });
+    }
+
+    function showError(message) {
+        const errorDiv = document.createElement('div');
+        errorDiv.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #f56565;
+            color: white;
+            padding: 1rem;
+            border-radius: 8px;
+            z-index: 1000;
+            max-width: 400px;
+        `;
+        errorDiv.textContent = message;
+        document.body.appendChild(errorDiv);
+        setTimeout(() => document.body.removeChild(errorDiv), 5000);
+    }
+
+    function addHoverEffects() {
+        document.querySelectorAll('.metric-card, .floor-card').forEach(card => {
+            card.addEventListener('mouseenter', function () {
+                this.style.transform = 'translateY(-2px)';
+                this.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.3)';
+                this.style.transition = 'all 0.2s ease';
+            });
+            card.addEventListener('mouseleave', function () {
+                this.style.transform = 'translateY(0)';
+                this.style.boxShadow = 'none';
+            });
+        });
+    }
+
+    async function initializeDashboard() {
+        await fetchParkingData();
+        addHoverEffects();
+    }
+
+    function startAutoRefresh() {
+        setInterval(async () => {
+            await fetchParkingData();
+            addHoverEffects();
+        }, 5000);
+    }
+
+    function updateConnectionStatus(connected) {
+        const statusIndicator = document.querySelector('.status-indicator');
+        statusIndicator.style.backgroundColor = connected ? '#48bb78' : '#f56565';
+        statusIndicator.title = connected ? 'Connected to database' : 'Database connection lost';
+    }
+
+    async function testConnection() {
+        try {
+            const response = await fetch(`${API_BASE_URL.replace('/api', '')}/health`);
+            const data = await response.json();
+            updateConnectionStatus(data.mongodb_connected);
+        } catch {
+            updateConnectionStatus(false);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        initializeDashboard();
+        startAutoRefresh();
+        testConnection();
+        setInterval(testConnection, 60000);
+    });
+</script>
+
+<script>
+document.getElementById('admin-login-btn').addEventListener('click', function(e) {
+    e.stopPropagation();
+    const modal = document.getElementById('index-login-modal');
+    modal.style.display = 'block';
+    // Optional: focus username field
+    document.getElementById("index-username").focus();
+});
+
+// Login logic
+document.getElementById('index-login-form').onsubmit = function(e) {
+    e.preventDefault();
+    const user = document.getElementById("index-username").value;
+    const pass = document.getElementById("index-password").value;
+    if (user === "admin" && pass === "password123") {
+        localStorage.setItem("admin-logged-in", "yes");
+        window.location.href = "admin.html";
+    } else {
+        document.getElementById("index-modal-error").innerText = "Invalid login";
+    }
+};
+
+// Clicking outside the modal closes it
+window.addEventListener('click', function(event) {
+    let modal = document.getElementById('index-login-modal');
+    let btn = document.getElementById('admin-login-btn');
+    if (modal.style.display === 'block' && !modal.contains(event.target) && event.target !== btn) {
+        modal.style.display = 'none';
+        document.getElementById("index-modal-error").innerText = "";
+    }
+});
+</script>
