@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ParkingPro - Purchase Permit</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #1a1d29;
+            color: #ffffff;
+            min-height: 100vh;
+        }
+
+        .header {
+            background-color: #2d3748;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #4a5568;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.25rem;
+            font-weight: bold;
+        }
+
+        .logo-icon {
+            width: 24px;
+            height: 24px;
+            background-color: #4299e1;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .nav-btn {
+            background: none;
+            border: none;
+            color: #a0aec0;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-btn:hover {
+            background-color: #4a5568;
+            color: white;
+        }
+
+        .nav-btn.active {
+            background-color: #4a5568;
+            color: white;
+        }
+
+        .container {
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .main-title {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: #a0aec0;
+            font-size: 1.1rem;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+            align-items: start;
+        }
+
+        .permits-section {
+            background-color: #2d3748;
+            border-radius: 12px;
+            padding: 2rem;
+            border: 1px solid #4a5568;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .section-icon {
+            font-size: 1.5rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .permits-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .permit-card {
+            background-color: #1a202c;
+            border: 2px solid #4a5568;
+            border-radius: 12px;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .permit-card:hover {
+            border-color: #4299e1;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(66, 153, 225, 0.15);
+        }
+
+        .permit-card.selected {
+            border-color: #4299e1;
+            background-color: rgba(66, 153, 225, 0.1);
+        }
+
+        .permit-card.most-popular {
+            border-color: #ed8936;
+        }
+
+        .permit-card.most-popular::before {
+            content: "Most Popular";
+            position: absolute;
+            top: -10px;
+            left: 1rem;
+            background-color: #ed8936;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .permit-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .permit-name {
+            font-size: 1.25rem;
+            font-weight: bold;
+        }
+
+        .permit-price {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #4299e1;
+        }
+
+        .permit-duration {
+            color: #a0aec0;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .permit-description {
+            color: #a0aec0;
+            margin-bottom: 1rem;
+            font-size: 0.95rem;
+        }
+
+        .permit-features {
+            list-style: none;
+        }
+
+        .permit-features li {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+            color: #a0aec0;
+            font-size: 0.9rem;
+        }
+
+        .permit-features li::before {
+            content: "✓";
+            color: #48bb78;
+            font-weight: bold;
+        }
+
+        .order-summary {
+            background-color: #2d3748;
+            border-radius: 12px;
+            padding: 2rem;
+            border: 1px solid #4a5568;
+            height: fit-content;
+            position: sticky;
+            top: 2rem;
+        }
+
+        .summary-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .summary-icon {
+            font-size: 1.5rem;
+        }
+
+        .summary-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .summary-placeholder {
+            text-align: center;
+            color: #a0aec0;
+            padding: 3rem 1rem;
+        }
+
+        .placeholder-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .placeholder-text {
+            margin-bottom: 0.5rem;
+        }
+
+        .vehicle-form {
+            background-color: #2d3748;
+            border-radius: 12px;
+            padding: 2rem;
+            border: 1px solid #4a5568;
+            margin-top: 2rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-label {
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #e2e8f0;
+        }
+
+        .required {
+            color: #f56565;
+        }
+
+        .form-input {
+            background-color: #1a202c;
+            border: 1px solid #4a5568;
+            border-radius: 8px;
+            padding: 0.75rem;
+            color: white;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #4299e1;
+        }
+
+        .form-input::placeholder {
+            color: #718096;
+        }
+
+        .selected-summary {
+            background-color: #1a202c;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .selected-permit-name {
+            font-size: 1.25rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .selected-permit-price {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #4299e1;
+            margin-bottom: 0.5rem;
+        }
+
+        .selected-permit-duration {
+            color: #a0aec0;
+            margin-bottom: 1rem;
+        }
+
+        .selected-features {
+            list-style: none;
+        }
+
+        .selected-features li {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.25rem;
+            color: #a0aec0;
+            font-size: 0.9rem;
+        }
+
+        .selected-features li::before {
+            content: "✓";
+            color: #48bb78;
+            font-weight: bold;
+        }
+
+        .purchase-btn {
+            width: 100%;
+            background-color: #4299e1;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 1rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            margin-top: 1rem;
+        }
+
+        .purchase-btn:hover {
+            background-color: #3182ce;
+        }
+
+        .purchase-btn:disabled {
+            background-color: #4a5568;
+            cursor: not-allowed;
+        }
+
+        @media (max-width: 768px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .permits-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .order-summary {
+                position: static;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">
+            <div class="logo-icon">🅿️</div>
+            ParkingPro
+        </div>
+        <div class="nav-buttons">
+<a href="index.html" class="nav-btn">🏠 Dashboard</a>
+<a href="purchase.html" class="nav-btn active">🎫 Purchase Permit</a>
+<a href="#" id="admin-login-btn" class="nav-btn">⚙️ Admin</a>
+        </div>
+    </div>
+<div id="index-login-modal" style="display:none; position:absolute; right:40px; top:60px; background:#2d3748; color:white; padding:1rem 2rem; border-radius:12px; box-shadow:0 0 20px #000; z-index:1000;">
+    <form id="index-login-form" style="display:flex; flex-direction:column; gap:0.5rem;">
+        <input type="text" id="index-username" placeholder="Username" required style="padding:0.5rem; border-radius:5px; border:1px solid #4a5568; background:#232839; color:white;">
+        <input type="password" id="index-password" placeholder="Password" required style="padding:0.5rem; border-radius:5px; border:1px solid #4a5568; background:#232839; color:white;">
+        <button type="submit" style="padding:0.6rem; border-radius:6px; border:none; background:#4299e1; color:white; font-size:1rem;">Login</button>
+        <p id="index-modal-error" style="color:#f56565; margin:0;"></p>
+    </form>
+</div>
+    <div class="container">
+        <div class="page-header">
+            <h1 class="main-title">Purchase Parking Permit</h1>
+            <p class="subtitle">Choose from our flexible permit options and get instant access to smart parking</p>
+        </div>
+
+        <div class="content-grid">
+            <div class="permits-section">
+                <div class="section-header">
+                    <span class="section-icon">🚗</span>
+                    <h2 class="section-title">Select Permit Type</h2>
+                </div>
+
+                <div class="permits-grid">
+                    <div class="permit-card" data-permit="daily" data-price="15" data-duration="24 hours">
+                        <div class="permit-header">
+                            <div class="permit-name">Daily Permit</div>
+                            <div class="permit-price">$7</div>
+                        </div>
+                        <div class="permit-duration">24 hours</div>
+                        <div class="permit-description">Perfect for visitors and occasional users</div>
+                        <ul class="permit-features">
+                            <li>24-hour access</li>
+                            <li>Any available spot</li>
+                            <li>Mobile notifications</li>
+                        </ul>
+                    </div>
+
+                    <div class="permit-card" data-permit="weekly" data-price="75" data-duration="7 days">
+                        <div class="permit-header">
+                            <div class="permit-name">Weekly Permit</div>
+                            <div class="permit-price">$35</div>
+                        </div>
+                        <div class="permit-duration">7 days</div>
+                        <div class="permit-description">Great for short-term projects or extended visits</div>
+                        <ul class="permit-features">
+                            <li>7-day access</li>
+                            <li>Priority parking</li>
+                            <li>Mobile notifications</li>
+                            <li>Refund available</li>
+                        </ul>
+                    </div>
+
+                    <div class="permit-card most-popular" data-permit="monthly" data-price="250" data-duration="30 days">
+                        <div class="permit-header">
+                            <div class="permit-name">Monthly Permit</div>
+                            <div class="permit-price">$100</div>
+                        </div>
+                        <div class="permit-duration">30 days</div>
+                        <div class="permit-description">Best value for regular commuters</div>
+                        <ul class="permit-features">
+                            <li>30-day access</li>
+                            <li>Reserved spot option</li>
+                            <li>Mobile notifications</li>
+                            <li>Transfer privileges</li>
+                        </ul>
+                    </div>
+
+                    <div class="permit-card" data-permit="semester" data-price="450" data-duration="120 days">
+                        <div class="permit-header">
+                            <div class="permit-name">Semester Permit</div>
+                            <div class="permit-price">$300</div>
+                        </div>
+                        <div class="permit-duration">120 days</div>
+                        <div class="permit-description">Ideal for students and long-term staff</div>
+                        <ul class="permit-features">
+                            <li>120-day access</li>
+                            <li>Guaranteed spot</li>
+                            <li>Mobile notifications</li>
+                            <li>Guest passes included</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="vehicle-form" id="vehicle-form" style="display: none;">
+                    <div class="section-header">
+                        <span class="section-icon">🚙</span>
+                        <h3 class="section-title">Vehicle & Contact Information</h3>
+                    </div>
+
+                    <form id="permit-form">
+    <div class="form-row">
+        <div class="form-group full-width">
+            <label class="form-label">Full Name <span class="required">*</span></label>
+            <input type="text" class="form-input" placeholder="Enter your full name" required>
+        </div>
+    </div>
+    
+    <div class="form-row">
+        <div class="form-group">
+            <label class="form-label">License Plate Number <span class="required">*</span></label>
+            <input type="text" class="form-input" placeholder="ABC-1234" required>
+        </div>
+        <div class="form-group">
+            <label class="form-label">Email Address <span class="required">*</span></label>
+            <input type="email" class="form-input" placeholder="your.email@example.com" required>
+        </div>
+    </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Vehicle Make</label>
+                                <input type="text" class="form-input" placeholder="Toyota, Honda, Ford...">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Vehicle Model</label>
+                                <input type="text" class="form-input" placeholder="Camry, Civic, F-150...">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group full-width">
+                                <label class="form-label">Phone Number (Optional)</label>
+                                <input type="tel" class="form-input" placeholder="(555) 123-4567">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="order-summary">
+                <div class="summary-header">
+                    <span class="summary-icon">📋</span>
+                    <h3 class="summary-title">Order Summary</h3>
+                </div>
+
+                <div id="summary-placeholder" class="summary-placeholder">
+                    <div class="placeholder-icon">🕐</div>
+                    <div class="placeholder-text">Please select a permit type to continue</div>
+                </div>
+
+                <div id="summary-content" style="display: none;">
+                    <div class="selected-summary">
+                        <div class="selected-permit-name" id="summary-name"></div>
+                        <div class="selected-permit-price" id="summary-price"></div>
+                        <div class="selected-permit-duration" id="summary-duration"></div>
+                        <ul class="selected-features" id="summary-features"></ul>
+                    </div>
+                    <button class="purchase-btn" id="purchase-btn" disabled>Complete Purchase</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const permitCards = document.querySelectorAll('.permit-card');
+        const vehicleForm = document.getElementById('vehicle-form');
+        const summaryPlaceholder = document.getElementById('summary-placeholder');
+        const summaryContent = document.getElementById('summary-content');
+        const purchaseBtn = document.getElementById('purchase-btn');
+        const permitForm = document.getElementById('permit-form');
+
+        let selectedPermit = null;
+
+        const permitData = {
+            daily: {
+                name: 'Daily Permit',
+                price: '$7',
+                duration: '24 hours',
+                features: ['24-hour access', 'Any available spot', 'Mobile notifications']
+            },
+            weekly: {
+                name: 'Weekly Permit',
+                price: '$35',
+                duration: '7 days',
+                features: ['7-day access', 'Priority parking', 'Mobile notifications', 'Refund available']
+            },
+            monthly: {
+                name: 'Monthly Permit',
+                price: '$100',
+                duration: '30 days',
+                features: ['30-day access', 'Reserved spot option', 'Mobile notifications', 'Transfer privileges']
+            },
+            semester: {
+                name: 'Semester Permit',
+                price: '$300',
+                duration: '120 days',
+                features: ['120-day access', 'Guaranteed spot', 'Mobile notifications', 'Guest passes included']
+            }
+        };
+
+        permitCards.forEach(card => {
+            card.addEventListener('click', () => {
+                // Remove selected class from all cards
+                permitCards.forEach(c => c.classList.remove('selected'));
+                
+                // Add selected class to clicked card
+                card.classList.add('selected');
+                
+                // Get permit data
+                const permitType = card.dataset.permit;
+                selectedPermit = permitType;
+                
+                // Show vehicle form
+                vehicleForm.style.display = 'block';
+                
+                // Update order summary
+                updateOrderSummary(permitType);
+                
+                // Scroll to form
+                vehicleForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+        });
+
+        function updateOrderSummary(permitType) {
+            const permit = permitData[permitType];
+            
+            // Hide placeholder, show content
+            summaryPlaceholder.style.display = 'none';
+            summaryContent.style.display = 'block';
+            
+            // Update summary details
+            document.getElementById('summary-name').textContent = permit.name;
+            document.getElementById('summary-price').textContent = permit.price;
+            document.getElementById('summary-duration').textContent = permit.duration;
+            
+            // Update features list
+            const featuresList = document.getElementById('summary-features');
+            featuresList.innerHTML = '';
+            permit.features.forEach(feature => {
+                const li = document.createElement('li');
+                li.textContent = feature;
+                featuresList.appendChild(li);
+            });
+            
+            // Check if form is valid to enable purchase button
+            checkFormValidity();
+        }
+
+        function checkFormValidity() {
+            const requiredInputs = permitForm.querySelectorAll('input[required]');
+            let isValid = selectedPermit !== null;
+            
+            requiredInputs.forEach(input => {
+                if (!input.value.trim()) {
+                    isValid = false;
+                }
+            });
+            
+            purchaseBtn.disabled = !isValid;
+        }
+
+        // Add event listeners to form inputs
+        if (permitForm) {
+            const inputs = permitForm.querySelectorAll('input');
+            inputs.forEach(input => {
+                input.addEventListener('input', checkFormValidity);
+            });
+        }
+
+        // Handle purchase button click
+purchaseBtn.addEventListener('click', async () => {
+    if (!purchaseBtn.disabled) {
+        await submitPurchase();
+    }
+});
+
+        // Add hover effects to permit cards
+        permitCards.forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                if (!this.classList.contains('selected')) {
+                    this.style.transform = 'translateY(-4px)';
+                    this.style.boxShadow = '0 8px 25px rgba(66, 153, 225, 0.15)';
+                }
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                if (!this.classList.contains('selected')) {
+                    this.style.transform = 'translateY(0)';
+                    this.style.boxShadow = 'none';
+                }
+            });
+        });
+    </script>
+
+    <script>
+document.getElementById('admin-login-btn').addEventListener('click', function(e) {
+    e.stopPropagation();
+    const modal = document.getElementById('index-login-modal');
+    modal.style.display = 'block';
+    // Optional: focus username field
+    document.getElementById("index-username").focus();
+});
+
+// Login logic
+document.getElementById('index-login-form').onsubmit = function(e) {
+    e.preventDefault();
+    const user = document.getElementById("index-username").value;
+    const pass = document.getElementById("index-password").value;
+    if (user === "admin" && pass === "password123") {
+        localStorage.setItem("admin-logged-in", "yes");
+        window.location.href = "admin.html";
+    } else {
+        document.getElementById("index-modal-error").innerText = "Invalid login";
+    }
+};
+
+// Clicking outside the modal closes it
+window.addEventListener('click', function(event) {
+    let modal = document.getElementById('index-login-modal');
+    let btn = document.getElementById('admin-login-btn');
+    if (modal.style.display === 'block' && !modal.contains(event.target) && event.target !== btn) {
+        modal.style.display = 'none';
+        document.getElementById("index-modal-error").innerText = "";
+    }
+});
+
+async function submitPurchase() {
+    try {
+        // Get form data
+        const formInputs = permitForm.querySelectorAll('input');
+        const fullName = formInputs[0].value.trim();
+        const plateNumber = formInputs[1].value.trim();
+        const email = formInputs[2].value.trim();
+        const vehicleMake = formInputs[3].value.trim();
+        const vehicleModel = formInputs[4].value.trim();
+        const phoneNumber = formInputs[5].value.trim();
+
+        // Prepare data for API
+        const vehicleData = {
+            plate_number: plateNumber,
+            owner_name: fullName,
+            permit_type: selectedPermit, // daily, weekly, monthly, semester
+            email: email,
+            vehicle_make: vehicleMake || null,
+            vehicle_model: vehicleModel || null,
+            phone_number: phoneNumber || null
+        };
+
+        // Submit to API
+        const response = await fetch('http://localhost:3000/api/vehicles', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(vehicleData)
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+            // Success
+            alert(`Purchase successful! Your ${permitData[selectedPermit].name} has been activated.`);
+            
+            // Reset form
+            permitForm.reset();
+            permitCards.forEach(c => c.classList.remove('selected'));
+            vehicleForm.style.display = 'none';
+            summaryPlaceholder.style.display = 'block';
+            summaryContent.style.display = 'none';
+            selectedPermit = null;
+        } else {
+            throw new Error(result.error || 'Purchase failed');
+        }
+    } catch (error) {
+        console.error('Purchase error:', error);
+        alert('Purchase failed. Please try again.');
+    }
+}
+</script>
+</body>
+</html>
