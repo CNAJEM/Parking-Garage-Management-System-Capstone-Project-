@@ -1,0 +1,1048 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ParkingPro - Admin Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #1a1d29;
+            color: #ffffff;
+            min-height: 100vh;
+        }
+
+        .header {
+            background-color: #2d3748;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #4a5568;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.25rem;
+            font-weight: bold;
+        }
+
+        .logo-icon {
+            width: 24px;
+            height: 24px;
+            background-color: #4299e1;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .nav-btn {
+            background: none;
+            border: none;
+            color: #a0aec0;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-btn:hover {
+            background-color: #4a5568;
+            color: white;
+        }
+
+        .nav-btn.active {
+            background-color: #4a5568;
+            color: white;
+        }
+
+        .container {
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .main-title {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: #a0aec0;
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .last-updated {
+            color: #718096;
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .metric-card {
+            background-color: #2d3748;
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 1px solid #4a5568;
+            transition: all 0.2s ease;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .metric-label {
+            color: #a0aec0;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-value {
+    font-size: 2.5rem;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+
+       .metric-icon {
+    font-size: 1.8rem;
+    display: flex;
+    align-items: center;
+}
+
+
+        .vehicles { color: #4299e1; }
+        .alerts { color: #f56565; }
+        .users { color: #48bb78; }
+        .extended { color: #ed8936; }
+
+        .tabs-container {
+            background-color: #2d3748;
+            border-radius: 8px;
+            border: 1px solid #4a5568;
+            overflow: hidden;
+        }
+
+        .tabs-header {
+            display: flex;
+            background-color: #1a202c;
+            border-bottom: 1px solid #4a5568;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            color: #a0aec0;
+            padding: 1rem 1.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-bottom: 3px solid transparent;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        .tab-btn:hover {
+            background-color: #2d3748;
+            color: white;
+        }
+
+        .tab-btn.active {
+            color: white;
+            background-color: #2d3748;
+            border-bottom-color: #4299e1;
+        }
+
+        .tab-content {
+            padding: 2rem;
+            min-height: 400px;
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .alerts-section {
+            margin-bottom: 2rem;
+        }
+
+        .alerts-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .alerts-title {
+            font-size: 1.25rem;
+            font-weight: bold;
+        }
+
+        .alert-count {
+            background-color: #f56565;
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .alert-item {
+            background-color: #1a202c;
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 4px solid #f56565;
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .alert-item.warning {
+            border-left-color: #ed8936;
+        }
+
+        .alert-content {
+            flex: 1;
+        }
+
+        .alert-type {
+            font-weight: bold;
+            margin-bottom: 0.25rem;
+        }
+
+        .alert-vehicle {
+            color: #a0aec0;
+            font-size: 0.9rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .alert-location {
+            color: #a0aec0;
+            font-size: 0.9rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .alert-time {
+            color: #718096;
+            font-size: 0.8rem;
+        }
+
+        .alert-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .alert-btn {
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .resolve-btn {
+            background-color: #48bb78;
+            color: white;
+        }
+
+        .resolve-btn:hover {
+            background-color: #38a169;
+        }
+
+        .escalate-btn {
+            background-color: #ed8936;
+            color: white;
+        }
+
+        .escalate-btn:hover {
+            background-color: #dd6b20;
+        }
+
+        .placeholder-content {
+            text-align: center;
+            color: #a0aec0;
+            padding: 3rem;
+        }
+
+        .placeholder-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .placeholder-text {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .placeholder-subtext {
+            font-size: 0.9rem;
+            color: #718096;
+        }
+
+        .search-bar-container {
+  display: flex;
+  align-items: center;
+  background-color: #2d3748;
+  border: 1px solid #4a5568;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  width: 320px;
+  color: #a0aec0;
+  margin-bottom: 1rem;
+}
+
+.search-icon {
+  margin-right: 0.5rem;
+  font-size: 1rem;
+  color: #a0aec0;
+}
+
+.search-input {
+  flex: 1;
+  background: none;
+  border: none;
+  outline: none;
+  font-size: 0.95rem;
+  color: white;
+}
+
+#real-time-monitoring th,
+#real-time-monitoring td {
+    padding: 1rem;
+    font-size: 1rem;
+    font-weight: 500;
+    text-align: center;
+    vertical-align: middle;
+    border-bottom: 1px solid #232839;
+}
+
+#real-time-monitoring th {
+    font-weight: 600;
+    background-color: #1a202c;
+    color: #a0aec0;
+}
+
+.realtime-search-bar {
+  display: flex;
+  align-items: center;
+  background: transparent;
+  margin-bottom: 1.5rem;
+  margin-left: 40px; /* Indent matches screenshot */
+}
+.realtime-search-bar .search-input,
+.realtime-search-bar select {
+  background-color: #2d3748;
+  border: 1px solid #4a5568;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 1rem;
+  padding: 0.4rem 0.75rem;
+  margin-right: 8px;
+  outline: none;
+  transition: border 0.2s;
+}
+.realtime-search-bar .search-input:focus,
+.realtime-search-bar select:focus {
+  border: 1.5px solid #4299e1;
+}
+.realtime-search-bar button {
+  font-size: 1rem;
+  font-weight: 500;
+  box-shadow: none;
+}
+
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">
+            <div class="logo-icon">🅿️</div>
+            ParkingPro
+        </div>
+        <div class="nav-buttons">
+            <a href="index.html" class="nav-btn">🏠 Dashboard</a>
+            <a href="#" class="nav-btn active">⚙️ Admin</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <h1 class="main-title">Admin Dashboard</h1>
+        <p class="subtitle">Real-time control and monitoring center</p>
+        <p class="last-updated">Last updated: 12:25:27 AM</p>
+
+        <div class="metrics-grid">
+  <div class="metric-card">
+    <div class="metric-label">Active Vehicles</div>
+    <div class="metric-value vehicles">  
+        <span class="active-count">0</span>
+      <i class="fa-solid fa-car-side metric-icon"></i>
+    </div>
+  </div>
+
+  <div class="metric-card">
+    <div class="metric-label">Active Alerts</div>
+    <div class="metric-value alerts">
+      <i class="fa-solid fa-triangle-exclamation metric-icon"></i>
+    </div>
+  </div>
+
+  <div class="metric-card">
+    <div class="metric-label">Registered Cars</div>
+    <div class="metric-value users">
+      <i class="fa-solid fa-user-group metric-icon"></i>
+    </div>
+  </div>
+
+  <div class="metric-card">
+    <div class="metric-label">Extended Stays</div>
+    <div class="metric-value extended">
+      <i class="fa-solid fa-clock metric-icon"></i>
+    </div>
+  </div>
+</div>
+
+
+        <div class="tabs-container">
+            <div class="tabs-header">
+                <button class="tab-btn active" data-tab="system-alerts">System Alerts</button>
+                <button class="tab-btn" data-tab="vehicle-management">Vehicle Management</button>
+                <button class="tab-btn" data-tab="real-time-monitoring">Real-time Monitoring</button>
+            </div>
+
+            <div id="system-alerts" class="tab-content active">
+                <div class="alerts-section">
+                    <div class="alerts-header">
+                        <span class="alerts-title">⚠️ Active Alerts</span>
+                        <span class="alert-count">(2)</span>
+                    </div>
+
+                    <div class="alert-item">
+                        <div class="alert-content">
+                            <div class="alert-type">🚫 Unauthorized Access</div>
+                            <div class="alert-vehicle">Vehicle: ABC-123</div>
+                            <div class="alert-location">Location: Ground Floor - Gate A</div>
+                            <div class="alert-time">41s ago</div>
+                        </div>
+                        <div class="alert-actions">
+                            <button class="alert-btn resolve-btn">Resolve</button>
+                            <button class="alert-btn escalate-btn">Escalate</button>
+                        </div>
+                    </div>
+
+                    <div class="alert-item warning">
+                        <div class="alert-content">
+                            <div class="alert-type">🕒 Extended Stay</div>
+                            <div class="alert-vehicle">Vehicle: XYZ-789</div>
+                            <div class="alert-location">Location: Level 2 - Space 45</div>
+                            <div class="alert-time">2m ago</div>
+                        </div>
+                        <div class="alert-actions">
+                            <button class="alert-btn resolve-btn">Resolve</button>
+                            <button class="alert-btn escalate-btn">Escalate</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="vehicle-management" class="tab-content">
+
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+  <div class="search-bar-container">
+    <i class="fas fa-search search-icon"></i>
+    <input type="text" id="vehicle-search" placeholder="Search by plate or owner..." class="search-input" />
+  </div>
+
+  <button id="add-vehicle-btn" style="background-color: #4299e1; color: white; padding: 0.5rem 1rem; border: none; border-radius: 6px; font-size: 0.9rem; cursor: pointer;">
+    + Add Vehicle
+  </button>
+</div>
+
+
+    <div class="vehicle-table-section">
+        <table style="width:100%; border-collapse: collapse; margin-bottom: 1rem;">
+            <thead>
+                <tr style="background-color: #2d3748; color: #a0aec0;">
+                    <th style="text-align: left; padding: 1rem;">Plate Number</th>
+                    <th style="text-align: left; padding: 1rem;">Owner Name</th>
+                    <th style="text-align: left; padding: 1rem;">Permit Type</th>
+                    <th style="text-align: left; padding: 1rem;">Expiry Date</th>
+                    <th style="text-align: left; padding: 1rem;">Status</th>
+                    <th style="text-align: left; padding: 1rem;">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="vehicle-table-body">
+                <!-- JavaScript will inject rows here -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+            <div id="real-time-monitoring" class="tab-content">
+<div class="realtime-search-bar">
+  <input type="text" id="searchPlate" placeholder="License Plate" class="search-input" style="width:130px;margin-right:32px;" />
+  <input type="number" id="minConfidence" placeholder="Min Con %" min="0" max="100" step="0.01" class="search-input" style="width:90px;margin-right:32px;" />
+  <input type="datetime-local" id="startDate" class="search-input" style="width:180px;margin-right:16px;" />
+  <input type="datetime-local" id="endDate" class="search-input" style="width:180px;margin-right:32px;" />
+  <select id="statusFilter" class="search-input" style="width:130px;margin-right:16px;">
+    <option value="">All Statuses</option>
+    <option value="in_garage">In</option>
+    <option value="exited">Out</option>
+  </select>
+  <button onclick="applyRealtimeFilters()" style="background-color: #4299e1; color: white; border: none; padding: 0.5rem 1.5rem; border-radius: 8px; margin-right:12px;">Search</button>
+  <button onclick="clearRealtimeFilters()" style="background-color: #718096; color: white; border: none; padding: 0.5rem 1.5rem; border-radius: 8px;">Clear</button>
+</div>
+
+
+
+  <table id="real-time-monitoring" style="width: 100%; border-collapse: collapse; background-color: #2d3748; border-radius: 8px; overflow: hidden;">
+<thead style="background-color: #1a202c; color: #a0aec0;">
+  <tr>
+    <th style="padding: 1rem;">Entry Time</th>
+    <th style="padding: 1rem;">Plate</th>
+    <th style="padding: 1rem;">Confidence</th>
+    <th style="padding: 1rem;">Status</th>
+    <th style="padding: 1rem;">Delete</th>
+  </tr>
+</thead>
+
+    <tbody id="realtime-table-body" style="color: white;"></tbody>
+  </table>
+</div>
+
+        </div>
+    </div>
+
+    <!-- Modal for Adding Vehicle -->
+<div id="addVehicleModal" style="display:none; position: fixed; z-index: 9999; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6);">
+  <div style="background: #2d3748; padding: 2rem; width: 400px; margin: 10% auto; border-radius: 8px; color: white;">
+    <h2 style="margin-bottom: 1rem;">Add Vehicle</h2>
+
+    <label>Plate Number</label>
+    <input type="text" id="modal-plate" style="width: 100%; padding: 0.5rem; margin-bottom: 1rem;" />
+
+    <label>Owner Name</label>
+    <input type="text" id="modal-owner" style="width: 100%; padding: 0.5rem; margin-bottom: 1rem;" />
+
+    <label>Permit Type</label>
+    <select id="modal-permit" style="width: 100%; padding: 0.5rem; margin-bottom: 1rem;">
+      <option value="Daily">Daily</option>
+      <option value="Weekly">Weekly</option>
+      <option value="Monthly">Monthly</option>
+    </select>
+
+    <div style="display: flex; justify-content: space-between;">
+      <button onclick="submitVehicle()" style="background-color: #48bb78; border: none; padding: 0.5rem 1rem; color: white; border-radius: 4px;">Submit</button>
+      <button onclick="closeModal()" style="background-color: #e53e3e; border: none; padding: 0.5rem 1rem; color: white; border-radius: 4px;">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script>
+    const ADMIN_API_BASE_URL = 'http://localhost:3000/api';
+
+   async function fetchAlerts() {
+  try {
+    const response = await fetch(`${ADMIN_API_BASE_URL}/alerts`);
+    if (!response.ok) throw new Error('Failed to fetch alerts');
+    const data = await response.json();
+    populateAlerts(data.alerts);
+  } catch (error) {
+    console.error('Error fetching alerts:', error);
+  }
+}
+
+function populateAlerts(alerts) {
+  const section = document.querySelector('.alerts-section');
+
+  section.innerHTML = `
+    <div class="alerts-header">
+      <span class="alerts-title">⚠️ Active Alerts</span>
+      <span class="alert-count">(${alerts.length})</span>
+    </div>
+  `;
+
+  // 🔼 Update top panel's active alerts metric
+  const activeAlertsValue = document.querySelector('.metric-value.alerts');
+  if (activeAlertsValue) {
+    activeAlertsValue.childNodes[0].textContent = alerts.length;
+  }
+
+  // ✅ Update Extended Stay metric
+  const extendedCount = alerts.filter(alert => alert.type === "Extended Stay").length;
+  const extendedValue = document.querySelector('.metric-value.extended');
+  if (extendedValue) {
+    extendedValue.childNodes[0].textContent = extendedCount;
+  }
+
+  alerts.forEach(alert => {
+    // Determine alert type and styling
+    let alertIcon = '🚫';
+    let alertClass = 'alert-item';
+    let alertTitle = 'Unauthorized Access';
+
+    if (alert.type === "Extended Stay") {
+      alertIcon = '🕒';
+      alertClass = 'alert-item warning';
+      alertTitle = 'Extended Stay';
+    } else if (alert.type === "No Permit") {
+      alertIcon = '🚨';
+      alertClass = 'alert-item'; // Same styling as unauthorized
+      alertTitle = 'No Permit';
+    } else if (alert.type === "Unauthorized Access") {
+      alertIcon = '🚫';
+      alertClass = 'alert-item';
+      alertTitle = 'Unauthorized Access';
+    }
+
+    const el = document.createElement('div');
+    el.className = alertClass;
+    el.innerHTML = `
+      <div class="alert-content">
+        <div class="alert-type">${alertIcon} ${alertTitle}</div>
+        <div class="alert-vehicle">Vehicle: ${alert.plate_number}</div>
+        <div class="alert-time">${new Date(alert.time).toLocaleTimeString()}</div>
+      </div>
+      <div class="alert-actions">
+        <button class="alert-btn resolve-btn" onclick="resolveAlert('${alert.plate_number}')">Resolve</button>
+      </div>
+    `;
+    section.appendChild(el);
+  });
+}
+
+
+   function populateVehicleTable(vehicles) {
+    const tbody = document.getElementById('vehicle-table-body');
+    tbody.innerHTML = ''; // Clear existing rows
+
+    // ✅ Count vehicles with non-expired permits
+    const now = new Date();
+    const activeUsersCount = vehicles.filter(v => new Date(v.expiry_date) > now).length;
+    const registeredUsersElement = document.querySelector('.metric-value.users');
+    if (registeredUsersElement) {
+        registeredUsersElement.childNodes[0].textContent = activeUsersCount;
+    }
+
+
+    const searchValue = document.getElementById("vehicle-search")?.value?.toLowerCase() || "";
+const filteredVehicles = vehicles.filter(vehicle =>
+    vehicle.plate_number.toLowerCase().includes(searchValue) ||
+    vehicle.owner_name.toLowerCase().includes(searchValue)
+);
+
+filteredVehicles.forEach(vehicle => {
+
+        const isExpired = new Date(vehicle.expiry_date) < new Date();
+        const status = isExpired ? 'Expired' : 'Active';
+        const statusColor = isExpired ? '#f56565' : '#48bb78';
+
+        const row = document.createElement('tr');
+        row.style.borderBottom = '1px solid #4a5568'; 
+        row.innerHTML = `
+            <td style="padding: 1rem;">${vehicle.plate_number}</td>
+            <td style="padding: 1rem;">${vehicle.owner_name}</td>
+            <td style="padding: 1rem;">${vehicle.permit_type}</td>
+            <td style="padding: 1rem;">${vehicle.expiry_date}</td>
+            <td style="padding: 1rem;">
+                <span style="background-color: ${statusColor}; color: white; padding: 0.25rem 0.75rem; border-radius: 8px; font-size: 0.8rem; font-weight: 600;">
+                    ${status}
+                </span>
+            </td>
+            <td style="padding: 1rem;">
+                
+                <button onclick="deleteVehicle('${vehicle._id}')" style="background-color: #fff5f5; color: #e53e3e; border: 1px solid #e53e3e; padding: 0.4rem 0.6rem; border-radius: 4px; cursor: pointer;">🗑️</button>
+            </td>
+        `;
+        tbody.appendChild(row);
+    });
+}
+
+    async function deleteVehicle(id) {
+    console.log("🗑️ Delete button clicked for vehicle ID:", id); // DEBUG
+
+    if (!confirm('Are you sure you want to delete this vehicle?')) return;
+    try {
+        const response = await fetch(`${ADMIN_API_BASE_URL}/vehicle/${id}`, {
+            method: 'DELETE'
+        });
+        const result = await response.json();
+        console.log("Delete response:", result); // DEBUG
+        if (result.deleted) {
+            fetchVehicles(); // Refresh table
+        } else {
+            alert("Vehicle not deleted.");
+        }
+    } catch (err) {
+        console.error('Failed to delete vehicle:', err);
+        alert("Failed to delete vehicle. Check console.");
+    }
+}
+
+async function deletePlate(id) {
+    if (!confirm('Are you sure you want to delete this plate record?')) return;
+    try {
+        const response = await fetch(`${ADMIN_API_BASE_URL}/plates/${id}`, {
+            method: 'DELETE'
+        });
+        const result = await response.json();
+        if (result.deleted) {
+            fetchRealtimePlates(); // Refresh table after deletion
+        } else {
+            alert("Plate record not deleted.");
+        }
+    } catch (err) {
+        console.error('Failed to delete plate record:', err);
+        alert("Failed to delete plate record. Check console.");
+    }
+}
+
+
+  async function fetchVehicles() {
+    try {
+        const response = await fetch(`${ADMIN_API_BASE_URL}/vehicles`);
+        if (!response.ok) throw new Error('Failed to fetch vehicles');
+        const vehicles = await response.json();
+        populateVehicleTable(vehicles);
+    } catch (error) {
+        console.error('Error fetching vehicles:', error);
+    }
+}
+
+let allRealtimePlates = [];
+let realtimeFilterActive = false;
+
+
+function fetchRealtimePlates() {
+  fetch(`${ADMIN_API_BASE_URL}/plates`)
+    .then(res => res.json())
+    .then(data => {
+      allRealtimePlates = data;
+      if (realtimeFilterActive) {
+        applyRealtimeFilters();
+      } else {
+        renderRealtimeTable(data);
+      }
+    })
+    .catch(err => console.error("Failed to fetch realtime data:", err));
+}
+
+
+function renderRealtimeTable(data) {
+  const tbody = document.getElementById("realtime-table-body");
+  tbody.innerHTML = "";
+
+  data.forEach(entry => {
+    const entryTime = entry.timestamp_entry ? new Date(entry.timestamp_entry).toLocaleString() : "-";
+    const statusClass = entry.status === "in_garage" ? "🟢 In" : "🔴 Out";
+    const confidence = entry.confidence ? parseFloat(entry.confidence).toFixed(2) + "%" : "-";
+
+ const row = document.createElement("tr");
+row.innerHTML = `
+  <td style="padding: 1rem;">${entryTime}</td>
+  <td style="padding: 1rem;">
+    <span style="background-color: #4a5568; padding: 0.25rem 0.5rem; border-radius: 4px;">
+      ${entry.plate_number}
+    </span>
+  </td>
+  <td style="padding: 1rem;">${confidence}</td>
+  <td style="padding: 1rem;">${statusClass}</td>
+  <td style="padding: 1rem; text-align: center;">
+    <span style="cursor:pointer;" onclick="deletePlate('${entry._id.$oid || entry._id}')">🗑️</span>
+  </td>
+`;
+
+
+    tbody.appendChild(row);
+  });
+}
+
+function applyRealtimeFilters() {
+    realtimeFilterActive = true;
+  const plateSearch = document.getElementById("searchPlate").value.trim().toUpperCase();
+  const minConfidence = parseFloat(document.getElementById("minConfidence").value) || 0;
+  const startDate = document.getElementById("startDate").value ? new Date(document.getElementById("startDate").value) : null;
+  const endDate = document.getElementById("endDate").value ? new Date(document.getElementById("endDate").value) : null;
+  const statusFilter = document.getElementById("statusFilter").value;
+
+  const filtered = allRealtimePlates.filter(entry => {
+    const plateMatch = !plateSearch || entry.plate_number.includes(plateSearch);
+    const confMatch = !entry.confidence || parseFloat(entry.confidence) >= minConfidence;
+
+    const timestamp = entry.timestamp_entry ? new Date(entry.timestamp_entry) : null;
+    const startMatch = !startDate || (timestamp && timestamp >= startDate);
+    const endMatch = !endDate || (timestamp && timestamp <= endDate);
+
+    const statusMatch = !statusFilter || entry.status === statusFilter;
+
+    return plateMatch && confMatch && startMatch && endMatch && statusMatch;
+  });
+
+  renderRealtimeTable(filtered);
+}
+
+function clearRealtimeFilters() {
+    realtimeFilterActive = false;
+  document.getElementById("searchPlate").value = "";
+  document.getElementById("minConfidence").value = "";
+  document.getElementById("startDate").value = "";
+  document.getElementById("endDate").value = "";
+  document.getElementById("statusFilter").value = "";
+  renderRealtimeTable(allRealtimePlates);
+}
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', function () {
+                const targetTab = this.getAttribute('data-tab');
+                tabBtns.forEach(b => b.classList.remove('active'));
+                tabContents.forEach(c => c.classList.remove('active'));
+                this.classList.add('active');
+                document.getElementById(targetTab).classList.add('active');
+            });
+        });
+
+        
+
+        document.querySelectorAll('.escalate-btn').forEach(btn => {
+            btn.addEventListener('click', function () {
+                alert('Escalate alert functionality - to be implemented');
+            });
+        });
+
+        function updateTimestamp() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('en-US', {
+                hour12: true,
+                hour: 'numeric',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            document.querySelector('.last-updated').textContent = `Last updated: ${timeString}`;
+        }
+
+        setInterval(updateTimestamp, 1000);
+
+        async function fetchAdminData() {
+            try {
+                const response = await fetch(`${ADMIN_API_BASE_URL}/parking-data`);
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                const data = await response.json();
+                updateAdminDashboard(data);
+            } catch (error) {
+                console.error('Error fetching admin dashboard data:', error);
+            }
+        }
+
+        function updateAdminDashboard(data) {
+            const { floors } = data;
+            const totalOccupied = floors.reduce((sum, f) => sum + f.occupied_spaces, 0);
+            const activeCountSpan = document.querySelector('.metric-value.vehicles .active-count');
+            if (activeCountSpan) {
+                activeCountSpan.textContent = totalOccupied;
+            }
+        }
+
+        fetchAdminData();
+        setInterval(fetchAdminData, 5000);
+
+        fetchAlerts();
+        setInterval(fetchAlerts, 5000);
+
+        // Add this to the DOMContentLoaded block
+        fetchRealtimePlates();
+        setInterval(fetchRealtimePlates, 5000);
+
+        fetchVehicles()
+        setInterval(fetchVehicles, 5000);
+        const searchInput = document.getElementById("vehicle-search");
+if (searchInput) {
+    searchInput.addEventListener("input", () => {
+        fetchVehicles();
+    });
+}
+
+  
+
+        fetchVehicles();
+
+    });
+
+    // Show modal on button click
+document.getElementById("add-vehicle-btn").addEventListener("click", () => {
+  document.getElementById("addVehicleModal").style.display = "block";
+});
+
+function closeModal() {
+  document.getElementById("addVehicleModal").style.display = "none";
+}
+
+// Submit vehicle to backend
+async function submitVehicle() {
+  const plate = document.getElementById("modal-plate").value.trim();
+  const owner = document.getElementById("modal-owner").value.trim();
+  const permit = document.getElementById("modal-permit").value;
+
+  if (!plate || !owner || !permit) {
+    alert("Please fill out all fields.");
+    return;
+  }
+
+  // Generate expiry date based on permit type
+  const today = new Date();
+  let expiry = new Date(today);
+
+  if (permit === "Daily") expiry.setDate(expiry.getDate() + 1);
+  else if (permit === "Weekly") expiry.setDate(expiry.getDate() + 7);
+  else if (permit === "Monthly") expiry.setMonth(expiry.getMonth() + 1);
+
+  const expiry_date = expiry.toISOString().split('T')[0]; // format as YYYY-MM-DD
+
+  try {
+    const response = await fetch(`${ADMIN_API_BASE_URL}/vehicles`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        plate_number: plate,
+        owner_name: owner,
+        permit_type: permit,
+        expiry_date
+      })
+    });
+
+    if (!response.ok) throw new Error("Failed to add vehicle");
+    closeModal();
+    fetchVehicles(); // refresh table
+  } catch (error) {
+    console.error("Add vehicle error:", error);
+    alert("Failed to add vehicle.");
+  }
+}
+async function resolveAlert(plateNumber) {
+    if (!confirm(`Are you sure you want to resolve the alert for plate ${plateNumber}? This will delete the plate entry.`)) {
+        return;
+    }
+
+    try {
+        // Get the plate entry ID based on the plate number
+        const response = await fetch(`${ADMIN_API_BASE_URL}/plates`);
+        const plates = await response.json();
+        const plateEntry = plates.find(p => p.plate_number.toUpperCase() === plateNumber.toUpperCase());
+        
+        if (!plateEntry) {
+            alert('Plate entry not found');
+            return;
+        }
+
+        // Delete the plate entry
+        const deleteResponse = await fetch(`${ADMIN_API_BASE_URL}/plates/${plateEntry._id}`, {
+            method: 'DELETE'
+        });
+        
+        const result = await deleteResponse.json();
+        
+        if (result.deleted) {
+            fetchAlerts(); // Refresh alerts
+            fetchRealtimePlates(); // Refresh realtime table
+            alert('Alert resolved successfully');
+        } else {
+            alert('Failed to resolve alert');
+        }
+    } catch (error) {
+        console.error('Error resolving alert:', error);
+        alert('Failed to resolve alert. Check console.');
+    }
+}
+</script>
+
+<!-- Login Modal -->
+   <!-- <div id="loginModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.7); z-index:10000; display: flex; align-items:center; justify-content:center;">
+      <form id="loginForm" style="background:#2d3748; color:white; padding:2rem; border-radius:12px; box-shadow:0 0 20px #000; display:flex; flex-direction:column; min-width:320px;">
+        <h2 style="margin-bottom:1rem;">Admin Login</h2>
+        <input type="text" id="modalUsername" placeholder="Username" required style="margin-bottom:1rem; padding:0.5rem; border-radius:5px; border:1px solid #4a5568; background:#232839; color:white;">
+        <input type="password" id="modalPassword" placeholder="Password" required style="margin-bottom:1rem; padding:0.5rem; border-radius:5px; border:1px solid #4a5568; background:#232839; color:white;">
+        <button type="submit" style="padding:0.75rem; border-radius:6px; border:none; background:#4299e1; color:white; font-size:1.1rem; margin-bottom:1rem;">Login</button>
+        <p id="modalError" style="color:#f56565;"></p>
+      </form>
+    </div>
+
+<script>
+(function() {
+  const ADMIN_USERNAME = "admin";
+  const ADMIN_PASSWORD = "password123";
+
+  // Show modal if not logged in
+  function showLoginModal() {
+    document.getElementById('loginModal').style.display = "flex";
+    document.body.style.overflow = "hidden";
+  }
+  function hideLoginModal() {
+    document.getElementById('loginModal').style.display = "none";
+    document.body.style.overflow = "auto";
+  }
+
+  // On page load, check login
+  if (localStorage.getItem("admin-logged-in") !== "yes") {
+    showLoginModal();
+  }
+
+  // Handle login form submit
+  document.getElementById("loginForm").onsubmit = function(e) {
+    e.preventDefault();
+    const user = document.getElementById("modalUsername").value;
+    const pass = document.getElementById("modalPassword").value;
+    if (user === ADMIN_USERNAME && pass === ADMIN_PASSWORD) {
+      localStorage.setItem("admin-logged-in", "yes");
+      hideLoginModal();
+      // Optionally, reload page to re-run any admin-only code
+      // location.reload();
+    } else {
+      document.getElementById("modalError").innerText = "Invalid login";
+    }
+  };
+})();
+</script>-->
+
+
+</body>
+</html>
