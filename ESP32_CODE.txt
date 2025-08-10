@@ -1,0 +1,112 @@
+#include <WiFi.h>
+#include <HTTPClient.h>
+#include <MD_Parola.h>
+#include <MD_MAX72XX.h>
+#include <SPI.h>
+
+// Wi-Fi credentials
+const char* ssid = "____";
+const char* password = "________";
+
+// Server endpoint
+const char* serverUrl = "__________________";
+
+// Display configuration
+#define HARDWARE_TYPE MD_MAX72XX::FC16_HW
+#define MAX_DEVICES 4
+#define DATA_PIN  16
+#define CS_PIN    15
+#define CLK_PIN   7
+MD_Parola display = MD_Parola(HARDWARE_TYPE, DATA_PIN, CLK_PIN, CS_PIN, MAX_DEVICES);
+
+// Sensor + LED config
+const int trigPin1 = 13, echoPin1 = 14, ledPin1 = 21;
+const int trigPin2 = 48, echoPin2 = 39, ledPin2 = 38;
+
+#define SOUND_SPEED 0.034
+unsigned long lastUpdate = 0;
+const unsigned long interval = 200;
+
+const int totalSpots = 2;
+int freeSpaces = totalSpots;
+int lastSentFreeSpaces = -1;  // Store previous value
+
+void setup() {
+  Serial.begin(115200);
+
+  // Wi-Fi setup
+  WiFi.begin(ssid, password);
+  Serial.print("Connecting to WiFi");
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500); Serial.print(".");
+  }
+  Serial.println("\nWiFi connected.");
+
+  // Display setup
+  display.begin();
+  display.setIntensity(8);
+  display.displayClear();
+  display.displayText("Lvl 1: 2", PA_LEFT, 0, 0, PA_PRINT, PA_NO_EFFECT);
+
+  // Sensor + LED setup
+  pinMode(trigPin1, OUTPUT); pinMode(echoPin1, INPUT); pinMode(ledPin1, OUTPUT);
+  pinMode(trigPin2, OUTPUT); pinMode(echoPin2, INPUT); pinMode(ledPin2, OUTPUT);
+}
+
+float getDistanceCM(int trig, int echo) {
+  digitalWrite(trig, LOW); delayMicroseconds(2);
+  digitalWrite(trig, HIGH); delayMicroseconds(10);
+  digitalWrite(trig, LOW);
+  long duration = pulseIn(echo, HIGH, 30000);
+  return (duration == 0) ? -1 : duration * SOUND_SPEED / 2;
+}
+
+void sendFreeSpacesToServer(int spaces) {
+  if (WiFi.status() == WL_CONNECTED) {
+    HTTPClient http;
+    http.begin(serverUrl);
+    http.addHeader("Content-Type", "application/json");
+
+    String payload = "{\"level\":\"1\", \"freeSpaces\":" + String(spaces) + "}";
+
+    int responseCode = http.POST(payload);
+
+    Serial.print("HTTP Response: ");
+    Serial.println(responseCode);
+    http.end();
+  } else {
+    Serial.println("WiFi not connected");
+  }
+}
+
+void loop() {
+  display.displayAnimate();
+
+  unsigned long now = millis();
+  if (now - lastUpdate >= interval) {
+    lastUpdate = now;
+
+    int occupied = 0;
+    float d1 = getDistanceCM(trigPin1, echoPin1);
+    float d2 = getDistanceCM(trigPin2, echoPin2);
+    if (d1 > 0 && d1 <= 20) occupied++;
+    if (d2 > 0 && d2 <= 20) occupied++;
+    freeSpaces = totalSpots - occupied;
+
+    Serial.print("Free Spaces: ");
+    Serial.println(freeSpaces);
+
+    if (freeSpaces != lastSentFreeSpaces) {
+      sendFreeSpacesToServer(freeSpaces);
+      lastSentFreeSpaces = freeSpaces;
+    }
+
+    char buffer[20];
+    snprintf(buffer, sizeof(buffer), "Lvl 1: %d", freeSpaces);
+    display.displayClear();
+    display.displayText(buffer, PA_LEFT, 0, 0, PA_PRINT, PA_NO_EFFECT);
+
+    digitalWrite(ledPin1, (d1 > 0 && d1 <= 20) ? HIGH : LOW);
+    digitalWrite(ledPin2, (d2 > 0 && d2 <= 20) ? HIGH : LOW);
+  }
+}
